@@ -25,7 +25,8 @@ class TripView(APIView):
         driver = Driver.objects.get(id=1)
 
         start_time = None
-        weather_info = None
+        weather_data = get_weather_data(data[0]['longitude'], data[0]['latitude'],
+                                   [datetime.datetime.fromisoformat(entry.get('time')) for entry in data])
 
         trip = Trip(normal_entries=0, vague_entries=0, dangerous_entries=0, driver=driver)
 
@@ -37,7 +38,8 @@ class TripView(APIView):
 
             if start_time is None or five_minute_bucket != start_time.minute:
                 start_time = timestamp
-                weather_info = get_weather_data(entry['longitude'], entry['latitude'])
+                # Find the appropriate weather info based on the timestamp
+                weather_info = next((item for item in weather_data if item['hour'] == timestamp), None)
 
             del entry['longitude']
             del entry['latitude']
@@ -47,7 +49,8 @@ class TripView(APIView):
             entry["vehicle length"] = driver.vehicle_length
             entry["vehicle weight"] = driver.vehicle_weight
 
-            entry.update(weather_info)
+            if weather_info: 
+                entry.update(weather_info)
 
             # Prepare the data for the model
             data = prepare_data(entry)
