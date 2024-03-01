@@ -26,9 +26,12 @@ def get_weather_data(lat, long):
 def get_precipitation_type(weather_code):
     # Classify conditions and map to simplified types
     mapping = {
-        "Rain": [1063, 1072, 1150, 1153, 1168, 1171, 1180, 1183, 1186, 1189, 1192, 1195, 1198, 1201, 1240, 1243, 1246, 1273, 1276],
-        "Snow": [1066, 1069, 1072, 1114, 1117, 1204, 1207, 1210, 1213, 1216, 1219, 1222, 1225, 1255, 1258, 1279, 1282],
-        "Clear": [1000, 1003, 1006, 1009]  
+        # RAIN
+        2: [1063, 1072, 1150, 1153, 1168, 1171, 1180, 1183, 1186, 1189, 1192, 1195, 1198, 1201, 1240, 1243, 1246, 1273, 1276],
+        # SNOW
+        1: [1066, 1069, 1072, 1114, 1117, 1204, 1207, 1210, 1213, 1216, 1219, 1222, 1225, 1255, 1258, 1279, 1282],
+        # CLEAR
+        0: [1000, 1003, 1006, 1009]  
     } 
 
     # Find and return the type 
@@ -37,7 +40,7 @@ def get_precipitation_type(weather_code):
             return precipitation_type
 
     # Default to "Clear" if nothing matches
-    return "Clear"
+    return 0
 
 # function to map precipitation intensity to ml model categories
 def get_precipitation_intensity(value):

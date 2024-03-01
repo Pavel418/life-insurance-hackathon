@@ -8,9 +8,13 @@ from .models import Trip, Driver
 from .serializers import TripSerializer
 import logging
 import json
+import cProfile
 
 class TripView(APIView):
     def post(self, request):
+        pr = cProfile.Profile()
+        pr.enable()
+
         try:
             data_str = request.body.decode('utf-8')  # Decode bytes into a string
             data = json.loads(data_str)            # Parse the JSON string
@@ -18,7 +22,7 @@ class TripView(APIView):
             logging.error(f'Error parsing JSON: {e}')
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
 
-        driver = Driver(name="Alice", vehicle_length=1265, vehicle_weight=10243, axles_number=2)
+        driver = Driver.objects.get(id=1)
 
         start_time = None
         weather_info = None
@@ -60,4 +64,6 @@ class TripView(APIView):
         trip.save()
 
         serializer = TripSerializer(trip)
+        pr.disable()
+        pr.dump_stats('profile.prof') 
         return JsonResponse(serializer.data, status=201)
